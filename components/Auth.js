@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, ImageBackground } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Button } from 'react-native-elements';
 import firebase from '../firebase';
 

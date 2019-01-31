@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Font } from 'expo';
 import { createStackNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { fadeIn } from 'react-navigation-transitions';
 
-import TabNav from './components/TabNav'
 import Auth from './components/Auth';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -17,7 +16,8 @@ const AuthStack = createStackNavigator(
         borderBottomWidth: 0
       },
       headerTintColor: '#fff',
-    }
+    },
+    transitionConfig: () => fadeIn(200)
   }
 );
 
