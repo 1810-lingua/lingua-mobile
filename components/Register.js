@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage, Button } from 'react-native-elements';
+import { Button } from 'react-native-elements';
+import FormLabel from './react-native-elements/FormLabel';
+import FormInput from './react-native-elements/FormInput';
+import FormValidationMessage from './react-native-elements/FormValidationMessage';
 import firebase from '../firebase';
 
 class Register extends Component {
@@ -30,8 +33,11 @@ class Register extends Component {
             ? <FormValidationMessage>{this.state.error}</FormValidationMessage>
             : null
           }
-          <FormLabel>Email</FormLabel>
-          <FormInput onChangeText={(input) => this.setState({email: input})} />
+          <FormLabel>Email Address</FormLabel>
+          <FormInput 
+            autoCapitalize='none'
+            onChangeText={(input) => this.setState({email: input})} 
+          />
           <FormLabel>Password</FormLabel>
           <FormInput
             secureTextEntry={true} 
@@ -40,6 +46,7 @@ class Register extends Component {
           />
           <Button 
             title='Register' 
+            textStyle={{ fontWeight: 'bold' }}
             buttonStyle={styles.button}
             onPress={this.handlePress} 
           />
@@ -52,20 +59,21 @@ class Register extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    marginTop: -90,
+    backgroundColor: '#7995b5'
   },
   innerContainer: {
-    marginLeft: 30,
-    marginRight: 30
+    marginLeft: 20,
+    marginRight: 20
   },
   button: {
-    backgroundColor: '#5077eb',
+    backgroundColor: 'transparent',
     borderRadius: 4,
+    borderWidth: 3,
+    borderColor: 'white',
     width: '100%',
-    marginTop: 20,
     paddingTop: 18,
     paddingBottom: 18,
+    marginTop: 20,
     alignSelf: 'center'
   }
 });
