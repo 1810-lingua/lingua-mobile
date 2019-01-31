@@ -5,11 +5,13 @@ import { fadeIn } from 'react-navigation-transitions';
 import Auth from './components/Auth';
 import Login from './components/Login';
 import Register from './components/Register';
-import Component1 from './components/Component1';
+import AllWordsScreen from './components/AllWordsScreen';
+import FlashCardScreen from './components/FlashCardScreen';
 
 const AuthStack = createStackNavigator(
   { Auth, Login, Register }, 
-  { initialRouteName: 'Auth',
+  { 
+    initialRouteName: 'Auth',
     defaultNavigationOptions: {
       headerStyle: {
         backgroundColor: '#7995b5',
@@ -21,7 +23,19 @@ const AuthStack = createStackNavigator(
   }
 );
 
-const AppStack = createStackNavigator({ Component1 });
+const AppStack = createStackNavigator(
+  { AllWordsScreen, FlashCardScreen },
+  {
+    initialRouteName: 'AllWordsScreen',
+    defaultNavigationOptions: {
+      headerStyle: {
+        backgroundColor: '#7995b5',
+        borderBottomWidth: 0
+      },
+      headerTintColor: '#fff',
+    }
+  }
+);
 
 const AppContainer = createAppContainer(createSwitchNavigator(
   { AuthStack, AppStack }, 

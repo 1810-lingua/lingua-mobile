@@ -1,19 +1,23 @@
+import React, { Component } from 'react';
+import { ScrollView, StyleSheet, View, Text } from 'react-native';
+import { Button } from 'react-native-elements';
+import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
+import FlashCardScreen from './FlashCardScreen'
+import firebase from '../firebase';
 
-import React from "react";
-import { ScrollView, StyleSheet, View, Text } from "react-native";
-import { ExpoLinksView } from "@expo/samples";
-
-export default class AllWords extends React.Component {
+class AllWordsScreen extends Component {
   static navigationOptions = {
-    title: "All Words"
-  };
-
+    title: 'All Words'
+  }
+  
   render() {
     return (
       <ScrollView style={styles.container}>
         <Text>Here are all your words!</Text>
-        {/* Go ahead and delete ExpoLinksView and replace it with your
-         * content, we just wanted to provide you with some helpful links */}
+        <Button
+          onPress={() => firebase.auth().signOut()}
+          title="Log Out"
+        />
       </ScrollView>
     );
   }
@@ -27,6 +31,11 @@ const styles = StyleSheet.create({
   }
 });
 
+const TabNavigator = createBottomTabNavigator({
+  AllWords: AllWordsScreen,
+  FlashCards: FlashCardScreen
+});
 
+export default createAppContainer(TabNavigator);
 
 

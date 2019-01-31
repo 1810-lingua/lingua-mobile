@@ -20,7 +20,7 @@ class Login extends Component {
     try {
       await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password);
     } catch (err) {
-      this.setState({error: err.message});
+      this.setState({ error: err.message });
     }
   }
 
