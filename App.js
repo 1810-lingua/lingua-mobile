@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { createStackNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation';
-import TabNav from './components/TabNav'
 
+import TabNav from './components/TabNav'
+import Auth from './components/Auth';
 import Login from './components/Login';
 import Register from './components/Register';
 import Component1 from './components/Component1';
 
 // Stacks
-const AuthStack = createStackNavigator({ Login, Register }, { initialRouteName: 'Login' });
+const AuthStack = createStackNavigator({ Auth, Login, Register }, { initialRouteName: 'Auth' });
 const AppStack = createStackNavigator({ Component1 });
 const AppContainer = createAppContainer(createSwitchNavigator({ AuthStack, AppStack }, { initialRouteName: 'AuthStack' }));
 
