@@ -7,7 +7,11 @@ class Profile extends Component {
   render() {
     return (
       <View>
-        <ListItem onPress={() => firebase.auth().signOut()} title="Log Out" />
+        <ListItem 
+          hideChevron
+          onPress={() => firebase.auth().signOut()} 
+          title="Log Out" 
+        />
       </View>
     );
   }
