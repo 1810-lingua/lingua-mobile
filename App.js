@@ -8,6 +8,9 @@ import Register from './components/Register';
 import AllWordsScreen from './components/AllWordsScreen';
 import FlashCardScreen from './components/FlashCardScreen';
 
+import { Provider } from 'react-redux';
+import store from './store';
+
 const AuthStack = createStackNavigator(
   { Auth, Login, Register }, 
   { 
@@ -44,6 +47,10 @@ const AppContainer = createAppContainer(createSwitchNavigator(
 
 export default class App extends Component {
   render() {
-    return <AppContainer />;
+    return (
+      <Provider store={store}>
+        <AppContainer />
+      </Provider>
+    );
   }
 }
