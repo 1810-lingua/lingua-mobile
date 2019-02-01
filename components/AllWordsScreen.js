@@ -5,6 +5,7 @@ import { Button } from 'react-native-elements';
 import Swipeout from 'react-native-swipeout'
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 import FlashCardScreen from './FlashCardScreen'
+import Profile from './Profile'
 import firebase from '../firebase';
 
 
@@ -65,15 +66,12 @@ class AllWordsScreen extends Component {
 
     return (
       <ScrollView style={styles.container}>
-        <Button
-          onPress={() => firebase.auth().signOut()}
-          title="Log Out"
-        />
-        <List containerStyle={{marginBottom: 20}}>
+        <List style={styles.wordList}>
           {
             this.props.words.map((word, idx) => (
-            <Swipeout key={idx} right={swipeBtns(word)}>
+            <Swipeout key={idx} left={swipeBtns(word)}>
               <ListItem
+                containerStyle={styles.wordList}
                 hideChevron
                 titleNumberOfLines={0}
                 subtitleNumberOfLines={0}
@@ -93,14 +91,18 @@ class AllWordsScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 15,
+    // paddingTop: 15,
     backgroundColor: "#fff"
+  },
+  wordList: {
+    backgroundColor: 'white'
   }
 });
 
 const TabNavigator = createBottomTabNavigator({
   AllWords: connect(msp,mdp)(AllWordsScreen),
-  FlashCards: FlashCardScreen
+  FlashCards: FlashCardScreen,
+  Profile
 });
 
 export default createAppContainer(TabNavigator);
