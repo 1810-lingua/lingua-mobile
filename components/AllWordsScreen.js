@@ -42,8 +42,12 @@ class AllWordsScreen extends Component {
     const { uid } = await firebase.auth().currentUser;
     await firebase.database().ref(`${uid}/spanish/${word}`).remove();
   }
-  
 
+  markLearned = async (word) => {
+    const { uid } = await firebase.auth().currentUser;
+      await firebase.database().ref(`${uid}/spanish/${word}`).update({learned: true});
+  }
+  
   render() {
     const swipeBtns = word => ([
       {
@@ -54,7 +58,8 @@ class AllWordsScreen extends Component {
       },
       {
         text: 'Learned',
-        backgroundColor: 'green'
+        backgroundColor: 'green',
+        onPress: () => { this.markLearned(word.word) }
       }   
     ]);
 
