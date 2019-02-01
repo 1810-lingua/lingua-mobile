@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
-import { ScrollView, StyleSheet, View, Text } from 'react-native';
-import { List, ListItem } from 'react-native-elements'
-import { Button } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { ScrollView, StyleSheet } from 'react-native';
+import { ListItem } from 'react-native-elements'
 import Swipeout from 'react-native-swipeout'
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 import FlashCardScreen from './FlashCardScreen'
 import Profile from './Profile'
 import firebase from '../firebase';
 
-
-import { connect } from 'react-redux';
 import { updateWords } from '../store/words';
 
 const msp = state => ({
@@ -46,17 +44,16 @@ class AllWordsScreen extends Component {
 
   markLearned = async (word) => {
     const { uid } = await firebase.auth().currentUser;
-      await firebase.database().ref(`${uid}/spanish/${word}`).update({learned: true});
+      await firebase.database().ref(`${uid}/spanish/${word}`).update({ learned: true });
   }
   
   render() {
     const swipeBtns = word => ([
       {
-      text: 'X',
-      backgroundColor: 'red',
-      underlayColor: 'rgba(0, 0, 0, 1, 0.6)',
-      onPress: () => { this.deleteWord(word.word) }
-      },
+        text: 'X',
+        backgroundColor: 'red',
+        onPress: () => { this.deleteWord(word.word) }
+        },
       {
         text: 'Learned',
         backgroundColor: 'green',
@@ -65,13 +62,12 @@ class AllWordsScreen extends Component {
     ]);
 
     return (
-      <ScrollView style={styles.container}>
-        <List style={styles.wordList}>
-          {
-            this.props.words.map((word, idx) => (
+      <ScrollView>
+        {
+          this.props.words.map((word, idx) => (
             <Swipeout key={idx} left={swipeBtns(word)}>
               <ListItem
-                containerStyle={styles.wordList}
+                containerStyle={styles.listItem}
                 hideChevron
                 titleNumberOfLines={0}
                 subtitleNumberOfLines={0}
@@ -80,27 +76,21 @@ class AllWordsScreen extends Component {
                 subtitle={word.translation}
               />
             </Swipeout>
-            ))
-          }
-          </List>    
+          ))
+        }   
       </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // paddingTop: 15,
-    backgroundColor: "#fff"
-  },
-  wordList: {
+  listItem: {
     backgroundColor: 'white'
   }
 });
 
 const TabNavigator = createBottomTabNavigator({
-  AllWords: connect(msp,mdp)(AllWordsScreen),
+  AllWords: connect(msp, mdp)(AllWordsScreen),
   FlashCards: FlashCardScreen,
   Profile
 });
