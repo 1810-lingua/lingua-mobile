@@ -9,7 +9,18 @@ import {
   Button
 } from "react-native";
 
-export default class flashCards extends Component {
+import { updateWords } from '../store/words';
+import { connect } from 'react-redux'
+import firebase from 'firebase'
+
+class flashCards extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      unlearned: this.props.words.filter(word => !word.learned),
+      idx: 0
+    }
+  }
   componentWillMount() {
     this.animatedValue = new Animated.Value(0);
     this.value = 0;
@@ -50,6 +61,23 @@ export default class flashCards extends Component {
     }
   }
 
+  nextWord() {
+    if (this.state.idx < this.state.unlearned.length) {
+      this.setState({idx: this.state.idx+1})
+    }
+    this.flipCard()
+  }
+
+  async knewThisWord(word) {
+    const { uid } = await firebase.auth().currentUser;
+    await firebase.database().ref(`${uid}/spanish/${word}`).update({ learned: true })
+    this.nextWord()
+  }
+
+  didNotKnowWord() {
+    this.nextWord()
+  }
+
   render() {
     const frontAnimatedStyle = {
       transform: [{ rotateY: this.frontInterpolate }]
@@ -70,7 +98,9 @@ export default class flashCards extends Component {
               ]}
             >
               <Text style={styles.flipText}>
-                This text is flipping on the front.
+                {
+                  this.props.words[this.state.idx].word
+                }
               </Text>
             </Animated.View>
             <Animated.View
@@ -82,10 +112,12 @@ export default class flashCards extends Component {
               ]}
             >
               <Text style={styles.flipText}>
-                This text is flipping on the back.
+                {
+                  this.props.words[this.state.idx].translation
+                }
               </Text>
-              <Button style={styles.button}  title="I don't know this word" color="red" />
-              <Button style={styles.button} title="I know this word" color="green" />
+              <Button onPress={() => this.knewThisWord(this.props.words[this.state.idx].word)} style={styles.button}  title="I know this word" color="green" />
+              <Button onPress={() => this.didNotKnowWord()} style={styles.button} title="I don't know this word" color="red" />
             </Animated.View>
           </View>
           <Text>Touch Card to flip</Text>
@@ -94,6 +126,14 @@ export default class flashCards extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  words: state.words.words
+})
+
+const mapDispatchToProps = dispatch => ({
+  updateWords: (words) => dispatch(updateWords(words))
+})
 
 const styles = StyleSheet.create({
   container: {
@@ -110,7 +150,7 @@ const styles = StyleSheet.create({
     backfaceVisibility: "hidden"
   },
   flipCardBack: {
-    backgroundColor: "red",
+    backgroundColor: "pink",
     position: "absolute",
     top: 0
   },
@@ -127,3 +167,5 @@ const styles = StyleSheet.create({
 });
 
 AppRegistry.registerComponent("flashCards", () => flashCards);
+
+export default connect(mapStateToProps, mapDispatchToProps)(flashCards)
