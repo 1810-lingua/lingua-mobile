@@ -1,3 +1,9 @@
+import firebase from '../firebase';
+
+const initialState = {
+  words: []
+}
+
 const GOT_WORDS = 'GOT_WORDS';
 
 const gotWords = (words) => ({
@@ -9,10 +15,6 @@ export const updateWords = (words) => {
   return async (dispatch) => {
     dispatch(gotWords(words));
   }
-}
-
-const initialState = {
-  words: []
 }
 
 export const wordReducer = (state = initialState, action) => {

@@ -1,25 +1,12 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Button } from 'react-native-elements';
-import { connect } from 'react-redux';
 import firebase from '../firebase';
-
-import { updateWords } from '../store/words';
-
-const mdp = dispatch => ({
-  updateWords: (words) => dispatch(updateWords(words))
-});
 
 class Auth extends Component {
   componentDidMount = () => {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        firebase.database().ref(`${user.uid}/spanish`).on('value', snapshot => {
-          // console.log('snapshotval', snapshot.val());
-          const words = Object.values(snapshot.val());
-          console.log('words', words);
-          this.props.updateWords(words);
-        });
         this.props.navigation.navigate('AppStack');
       } else {
         this.props.navigation.navigate('AuthStack');
@@ -75,4 +62,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default connect(null, mdp)(Auth);
+export default Auth;
