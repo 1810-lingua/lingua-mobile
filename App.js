@@ -5,8 +5,7 @@ import { fadeIn } from 'react-navigation-transitions';
 import Auth from './components/Auth';
 import Login from './components/Login';
 import Register from './components/Register';
-import AllWordsScreen from './components/AllWordsScreen';
-import FlashCardScreen from './components/FlashCardScreen';
+import BottomTabNavigation from './navigation/BottomTabNavigation';
 
 import { Provider } from 'react-redux';
 import store from './store';
@@ -27,15 +26,14 @@ const AuthStack = createStackNavigator(
 );
 
 const AppStack = createStackNavigator(
-  { AllWordsScreen, FlashCardScreen },
+  { BottomTabNavigation },
   {
-    initialRouteName: 'AllWordsScreen',
+    initialRouteName: 'BottomTabNavigation',
     defaultNavigationOptions: {
+      title: 'Lingua',
       headerStyle: {
-        backgroundColor: '#7995b5',
-        borderBottomWidth: 0
-      },
-      headerTintColor: '#fff',
+        backgroundColor: 'white'
+      }
     }
   }
 );
