@@ -4,14 +4,7 @@ import { View, ScrollView, StyleSheet } from "react-native";
 import { ButtonGroup } from "react-native-elements";
 import ListItem from "./react-native-elements/ListItem";
 import Swipeout from "react-native-swipeout";
-import { createBottomTabNavigator, createAppContainer } from "react-navigation";
-
 import firebase from "../firebase";
-
-import { Ionicons } from "@expo/vector-icons";
-import FlashCardScreen from "./FlashCardScreen";
-import Profile from "./Profile";
-
 import { updateWords } from "../store/words";
 
 const mapStateToProps = state => ({
@@ -191,53 +184,4 @@ const styles = StyleSheet.create({
   }
 });
 
-const TabNavigator = createBottomTabNavigator({
-  Words: {
-    screen: connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(AllWordsScreen),
-    navigationOptions: {
-      tabBarLabel: "Words",
-      tabBarIcon: ({ tintColor, focused }) => (
-        <Ionicons
-          name={focused ? "ios-list" : "ios-list"}
-          size={26}
-          style={{ color: tintColor }}
-        />
-      )
-    }
-  },
-  FlashCards: {
-    screen: FlashCardScreen,
-    navigationOptions: {
-      tabBarLabel: "Flash Cards",
-      tabBarIcon: ({ tintColor, focused }) => (
-        <Ionicons
-          name={
-            focused
-              ? "ios-checkmark-circle-outline"
-              : "ios-checkmark-circle-outline"
-          }
-          size={26}
-          style={{ color: tintColor }}
-        />
-      )
-    }
-  },
-  Profile: {
-    screen: Profile,
-    navigationOptions: {
-      tabBarLabel: "Profile",
-      tabBarIcon: ({ tintColor, focused }) => (
-        <Ionicons
-          name={focused ? "ios-person" : "ios-person"}
-          size={26}
-          style={{ color: tintColor }}
-        />
-      )
-    }
-  }
-});
-
-export default createAppContainer(TabNavigator);
+export default connect(mapStateToProps, mapDispatchToProps)(AllWordsScreen);
