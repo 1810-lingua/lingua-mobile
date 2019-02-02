@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, View } from "react-native";
-import { ListItem } from "react-native-elements";
+import ListItem from "./react-native-elements/ListItem";
 import firebase from "../firebase";
 
 class Profile extends Component {

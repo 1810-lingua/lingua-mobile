@@ -31,11 +31,10 @@ const AppStack = createStackNavigator(
   {
     initialRouteName: 'AllWordsScreen',
     defaultNavigationOptions: {
+      title: 'Lingua',
       headerStyle: {
-        backgroundColor: '#7995b5',
-        borderBottomWidth: 0
-      },
-      headerTintColor: '#fff',
+        backgroundColor: 'white'
+      }
     }
   }
 );
