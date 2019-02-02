@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { ButtonGroup } from "react-native-elements";
-import ListItem from './react-native-elements/ListItem';
+import ListItem from "./react-native-elements/ListItem";
 import Swipeout from "react-native-swipeout";
 import { createBottomTabNavigator, createAppContainer } from "react-navigation";
 
 import firebase from "../firebase";
 
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 import FlashCardScreen from "./FlashCardScreen";
 import Profile from "./Profile";
 
@@ -79,120 +79,99 @@ class AllWordsScreen extends Component {
     this.setState({ selectedIndex });
   };
 
-  render() {
-    const allSwipeButtons = word => [
-      {
-        text: 'Delete',
-        backgroundColor: 'red',
-        onPress: () => {
-          this.deleteWord(word.word)
-        }
-      }
-    ];
-
-    const toLearnButtons = word => [
-      {
-        text: 'Delete',
-        backgroundColor: 'red',
-        onPress: () => {
-          this.deleteWord(word.word);
-        }
-      },
-      {
-        text: "Archive",
-        backgroundColor: "green",
-        onPress: () => {
-          this.markLearned(word.word);
-        }
-      }
-    ];
-
-    const learnedButtons = word => [
-      {
-        text: 'Delete',
-        backgroundColor: 'red',
-        onPress: () => {
-          this.deleteWord(word.word);
-        }
-      },
-      {
-        text: "Unarchive",
-        backgroundColor: "green",
-        onPress: () => {
-          this.markUnlearned(word.word);
-        }
-      }
-    ];
-
-    const buttons = ["All", "To Learn", "Learned"];
-    const { selectedIndex } = this.state;
+  getFilteredWords = () => {
     const { words } = this.props;
+    const { selectedIndex } = this.state;
+    if (selectedIndex === 0) {
+      return words;
+    } else if (selectedIndex === 1) {
+      return words.filter(word => word.learned === false);
+    } else {
+      return words.filter(word => word.learned === true);
+    }
+  };
+
+  getSwipeButtons = () => {
+    const { selectedIndex } = this.state;
+    if (selectedIndex === 0) {
+      return word => [
+        {
+          text: "Delete",
+          backgroundColor: "red",
+          onPress: () => {
+            this.deleteWord(word.word);
+          }
+        }
+      ];
+    } else if (selectedIndex === 1) {
+      return word => [
+        {
+          text: "Delete",
+          backgroundColor: "red",
+          onPress: () => {
+            this.deleteWord(word.word);
+          }
+        },
+        {
+          text: "Archive",
+          backgroundColor: "green",
+          onPress: () => {
+            this.markLearned(word.word);
+          }
+        }
+      ];
+    } else {
+      return word => [
+        {
+          text: "Delete",
+          backgroundColor: "red",
+          onPress: () => {
+            this.deleteWord(word.word);
+          }
+        },
+        {
+          text: "Unarchive",
+          backgroundColor: "green",
+          onPress: () => {
+            this.markUnlearned(word.word);
+          }
+        }
+      ];
+    }
+  };
+
+  render() {
+    const buttons = ["All", "To Learn", "Learned"];
+    const swipeButtons = this.getSwipeButtons();
+    const filteredWords = this.getFilteredWords();
 
     return (
       <View>
         <ButtonGroup
           onPress={this.updateIndex}
-          selectedIndex={selectedIndex}
+          selectedIndex={this.state.selectedIndex}
           buttons={buttons}
-          textStyle={{ color: '#7995b5' }}
+          textStyle={{ color: "#7995b5" }}
           containerStyle={styles.buttonGroupContainer}
           selectedTextStyle={styles.buttonGroupSelectedText}
           selectedButtonStyle={styles.buttonGroupSelectedButton}
-          innerBorderStyle={{ color: '#7995b5', width: 0.5 }}
+          innerBorderStyle={{ color: "#7995b5", width: 0.5 }}
         />
-        {selectedIndex === 0 ? (
-          <ScrollView>
-            {words.map((word, idx) => (
-              <Swipeout key={idx} left={allSwipeButtons(word)} autoClose={true}>
-                <ListItem
-                  containerStyle={styles.listItem}
-                  hideChevron
-                  titleNumberOfLines={0}
-                  subtitleNumberOfLines={0}
-                  key={idx}
-                  title={word.word}
-                  subtitle={word.translation}
-                />
-              </Swipeout>
-            ))}
-          </ScrollView>
-        ) : selectedIndex === 1 ? (
-          <ScrollView>
-            {words
-              .filter(word => word.learned === false)
-              .map((word, idx) => (
-                <Swipeout key={idx} left={toLearnButtons(word)}>
-                  <ListItem
-                    containerStyle={styles.listItem}
-                    hideChevron
-                    titleNumberOfLines={0}
-                    subtitleNumberOfLines={0}
-                    key={idx}
-                    title={word.word}
-                    subtitle={word.translation}
-                  />
-                </Swipeout>
-              ))}
-          </ScrollView>
-        ) : (
-          <ScrollView>
-            {words
-              .filter(word => word.learned === true)
-              .map((word, idx) => (
-                <Swipeout key={idx} left={learnedButtons(word)}>
-                  <ListItem
-                    containerStyle={styles.listItem}
-                    hideChevron
-                    titleNumberOfLines={0}
-                    subtitleNumberOfLines={0}
-                    key={idx}
-                    title={word.word}
-                    subtitle={word.translation}
-                  />
-                </Swipeout>
-              ))}
-          </ScrollView>
-        )}
+        <ScrollView>
+          {filteredWords.map((word, idx) => (
+            <Swipeout key={idx} left={swipeButtons(word)} autoClose={true}>
+              <ListItem
+                containerStyle={styles.listItem}
+                hideChevron
+                titleNumberOfLines={0}
+                subtitleNumberOfLines={0}
+                key={idx}
+                title={word.word}
+                subtitle={word.translation}
+              />
+            </Swipeout>
+          ))}
+        </ScrollView>
       </View>
     );
   }
@@ -205,11 +184,11 @@ const styles = StyleSheet.create({
   buttonGroupContainer: {
     height: 40,
     backgroundColor: "white",
-    borderColor: '#7995b5',
+    borderColor: "#7995b5",
     borderWidth: 0.5
   },
   buttonGroupSelectedText: {
-    color: 'white'
+    color: "white"
   },
   buttonGroupSelectedButton: {
     backgroundColor: "#7995b5"
@@ -218,12 +197,15 @@ const styles = StyleSheet.create({
 
 const TabNavigator = createBottomTabNavigator({
   Words: {
-    screen: connect(mapStateToProps,mapDispatchToProps)(AllWordsScreen),
+    screen: connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(AllWordsScreen),
     navigationOptions: {
-      tabBarLabel: 'Words',
+      tabBarLabel: "Words",
       tabBarIcon: ({ tintColor, focused }) => (
         <Ionicons
-          name={focused ? 'ios-list' : 'ios-list'}
+          name={focused ? "ios-list" : "ios-list"}
           size={26}
           style={{ color: tintColor }}
         />
@@ -233,10 +215,14 @@ const TabNavigator = createBottomTabNavigator({
   FlashCards: {
     screen: FlashCardScreen,
     navigationOptions: {
-      tabBarLabel: 'Flash Cards',
+      tabBarLabel: "Flash Cards",
       tabBarIcon: ({ tintColor, focused }) => (
         <Ionicons
-          name={focused ? 'ios-checkmark-circle-outline' : 'ios-checkmark-circle-outline'}
+          name={
+            focused
+              ? "ios-checkmark-circle-outline"
+              : "ios-checkmark-circle-outline"
+          }
           size={26}
           style={{ color: tintColor }}
         />
@@ -246,10 +232,10 @@ const TabNavigator = createBottomTabNavigator({
   Profile: {
     screen: Profile,
     navigationOptions: {
-      tabBarLabel: 'Profile',
+      tabBarLabel: "Profile",
       tabBarIcon: ({ tintColor, focused }) => (
         <Ionicons
-          name={focused ? 'ios-person' : 'ios-person'}
+          name={focused ? "ios-person" : "ios-person"}
           size={26}
           style={{ color: tintColor }}
         />
