@@ -8,7 +8,6 @@ class Profile extends Component {
     return (
       <View>
         <ListItem 
-          hideChevron
           onPress={() => firebase.auth().signOut()} 
           title="Log Out" 
         />

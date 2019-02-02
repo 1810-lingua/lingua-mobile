@@ -146,7 +146,7 @@ class AllWordsScreen extends Component {
     const filteredWords = this.getFilteredWords();
 
     return (
-      <View>
+      <View style={{ flex: 1 }}>
         <ButtonGroup
           onPress={this.updateIndex}
           selectedIndex={this.state.selectedIndex}
@@ -161,10 +161,6 @@ class AllWordsScreen extends Component {
           {filteredWords.map((word, idx) => (
             <Swipeout key={idx} left={swipeButtons(word)} autoClose={true}>
               <ListItem
-                containerStyle={styles.listItem}
-                hideChevron
-                titleNumberOfLines={0}
-                subtitleNumberOfLines={0}
                 key={idx}
                 title={word.word}
                 subtitle={word.translation}
@@ -178,8 +174,8 @@ class AllWordsScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  listItem: {
-    backgroundColor: "white"
+  sflex: {
+    flex: 1
   },
   buttonGroupContainer: {
     height: 40,

@@ -3,7 +3,13 @@ import { ListItem as OldListItem } from 'react-native-elements';
 
 const ListItem = (props) => {
   return (
-    <OldListItem {...props} containerStyle={styles.containerStyle} />
+    <OldListItem
+      {...props} 
+      containerStyle={styles.containerStyle} 
+      hideChevron
+      titleNumberOfLines={0}
+      subtitleNumberOfLines={0}
+    />
   );
 }
 
