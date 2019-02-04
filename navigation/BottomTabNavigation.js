@@ -54,7 +54,14 @@ export const TabNavigator = createBottomTabNavigator({
   ImageDetection: {
     screen: ImageDetection,
     navigationOptions: {
-      tabBarLabel: "Image Detection"
+      tabBarLabel: "Image Detection",
+      tabBarIcon: ({ tintColor, focused }) => (
+        <Ionicons
+          name={focused ? "ios-camera" : "ios-camera"}
+          size={26}
+          style={{ color: tintColor }}
+        />
+      )
     }
   }
 });

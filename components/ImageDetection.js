@@ -1,15 +1,18 @@
 import React, { Component } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
-import Dialog, { DialogContent } from 'react-native-popup-dialog'
+import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
+import Dialog, { DialogContent, DialogFooter, DialogButton } from 'react-native-popup-dialog'
 import { Camera, Permissions, ImageManipulator } from "expo";
+import { Ionicons } from "@expo/vector-icons";
 import { GCV_key } from "../config/environment";
+import firebase from '../firebase'
 
 export default class ImageDetection extends React.Component {
   state = {
     hasCameraPermission: null,
     type: Camera.Constants.Type.back,
     identifier: '',
-    visible: false
+    visible: false,
+    loading: false
   };
 
   componentDidMount = async () => {
@@ -50,6 +53,19 @@ export default class ImageDetection extends React.Component {
     this.setState({identifier: objectIdentifier, visible: true})
   };
 
+  addWordFromCam = async (word) => {
+    const { uid } = await firebase.auth().currentUser;
+    await firebase
+      .database()
+      .ref(`${uid}/spanish/${word}`)
+      .set({
+        word: word,
+        translation: 'TEST',
+        learned: false
+      });
+      this.setState({visible: false})
+  }
+
   render() {
     const { hasCameraPermission } = this.state;
     if (hasCameraPermission === null) {
@@ -73,30 +89,49 @@ export default class ImageDetection extends React.Component {
                 flexDirection: "row"
               }}
             >
-              <View>
+              <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                   <TouchableOpacity
                     style={{
-                      flex: 0.1,
-                      alignSelf: "flex-end",
-                      alignItems: "center"
+                      // flex: 0.1,
+                      alignItems: "center",
                     }}
                     onPress={this.takePicture}
                   >
-                    <Text
+                    {/* <Text
                       style={{ fontSize: 18, marginBottom: 20, color: "white" }}
                     >
                       {" "}
                       Capture{" "}
-                    </Text>
+                    </Text> */}
+                    <Ionicons
+                    name={"ios-camera"}
+                    size={50}
+                    style={{ color: "white" }}
+                  />
                   </TouchableOpacity>
                     <Dialog
+                    width={0.7}
                     visible={this.state.visible}
+                    footer={
+                      <DialogFooter>
+                          <DialogButton 
+                            text="ADD TO WORDS"
+                            onPress={() => {this.addWordFromCam(this.state.identifier)}}
+                            textStyle={styles.textStyle}
+                          />
+                          <DialogButton 
+                          text="OK"
+                          onPress={() => {this.setState({visible: false})}}
+                          textStyle={styles.textStyle}
+                        />
+                      </DialogFooter>
+                    }
                     onTouchOutside={() => {
                       this.setState({ visible: false });
                     }}
                   >
                     <DialogContent>
-                    <Text>{this.state.identifier}</Text>
+                      <Text style={styles.dialogContentStyle}>{this.state.identifier}</Text>
                     </DialogContent>
                   </Dialog>
               </View>
@@ -107,3 +142,16 @@ export default class ImageDetection extends React.Component {
     }
   }
 }
+
+const styles = StyleSheet.create({
+  textStyle: {
+    textAlign: "center",
+    fontSize: 12
+  },
+  dialogContentStyle: {
+    textAlign: "center",
+    fontSize: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+});

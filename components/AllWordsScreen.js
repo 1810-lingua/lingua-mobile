@@ -167,7 +167,7 @@ class AllWordsScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  sflex: {
+  flex: {
     flex: 1
   },
   buttonGroupContainer: {
