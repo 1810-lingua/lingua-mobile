@@ -5,6 +5,7 @@ import { createBottomTabNavigator, createAppContainer } from "react-navigation";
 import AllWordsScreen from '../components/AllWordsScreen';
 import FlashCardScreen from '../components/FlashCardScreen';
 import Profile from '../components/Profile';
+import ImageDetection from '../components/ImageDetection';
 
 export const TabNavigator = createBottomTabNavigator({
   Words: {
@@ -48,6 +49,12 @@ export const TabNavigator = createBottomTabNavigator({
           style={{ color: tintColor }}
         />
       )
+    }
+  },
+  ImageDetection: {
+    screen: ImageDetection,
+    navigationOptions: {
+      tabBarLabel: "Image Detection"
     }
   }
 });
