@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
+import Dialog, { DialogContent } from 'react-native-popup-dialog'
 import { Camera, Permissions, ImageManipulator } from "expo";
 import { GCV_key } from "../config/environment";
 
 export default class ImageDetection extends React.Component {
   state = {
     hasCameraPermission: null,
-    type: Camera.Constants.Type.back
+    type: Camera.Constants.Type.back,
+    identifier: '',
+    visible: false
   };
 
   componentDidMount = async () => {
@@ -43,7 +46,8 @@ export default class ImageDetection extends React.Component {
       }
     );
     const response = await results.json();
-    console.log('response', response.responses[0].labelAnnotations[0].description);
+    const objectIdentifier = response.responses[0].labelAnnotations[0].description;
+    this.setState({identifier: objectIdentifier, visible: true})
   };
 
   render() {
@@ -69,45 +73,32 @@ export default class ImageDetection extends React.Component {
                 flexDirection: "row"
               }}
             >
-              <TouchableOpacity
-                style={{
-                  flex: 0.1,
-                  alignSelf: "flex-end",
-                  alignItems: "center"
-                }}
-                onPress={() => {
-                  this.setState({
-                    type:
-                      this.state.type === Camera.Constants.Type.back
-                        ? Camera.Constants.Type.front
-                        : Camera.Constants.Type.back
-                  });
-                }}
-              >
-                <Text
-                  style={{ fontSize: 18, marginBottom: 10, color: "white" }}
-                >
-                  {" "}
-                  Flip{" "}
-                </Text>
-              </TouchableOpacity>
-
               <View>
-                <TouchableOpacity
-                  style={{
-                    flex: 0.1,
-                    alignSelf: "flex-end",
-                    alignItems: "center"
-                  }}
-                  onPress={this.takePicture}
-                >
-                  <Text
-                    style={{ fontSize: 18, marginBottom: 20, color: "white" }}
+                  <TouchableOpacity
+                    style={{
+                      flex: 0.1,
+                      alignSelf: "flex-end",
+                      alignItems: "center"
+                    }}
+                    onPress={this.takePicture}
                   >
-                    {" "}
-                    Capture{" "}
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      style={{ fontSize: 18, marginBottom: 20, color: "white" }}
+                    >
+                      {" "}
+                      Capture{" "}
+                    </Text>
+                  </TouchableOpacity>
+                    <Dialog
+                    visible={this.state.visible}
+                    onTouchOutside={() => {
+                      this.setState({ visible: false });
+                    }}
+                  >
+                    <DialogContent>
+                    <Text>{this.state.identifier}</Text>
+                    </DialogContent>
+                  </Dialog>
               </View>
             </View>
           </Camera>
