@@ -5,7 +5,6 @@ import thunkMiddleware from 'redux-thunk';
 import { wordReducer } from './words';
 
 const reducer = combineReducers({ words: wordReducer });
-// const middleware = applyMiddleware(thunkMiddleware, createLogger({ collapsed: true }));
 const middleware = applyMiddleware(thunkMiddleware);
 const store = createStore(reducer, middleware);
 
