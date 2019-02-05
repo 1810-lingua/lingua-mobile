@@ -1,17 +1,22 @@
 import React, { Component } from "react";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
-import Dialog, { DialogContent, DialogFooter, DialogButton } from 'react-native-popup-dialog'
+import Dialog, {
+  DialogContent,
+  DialogFooter,
+  DialogButton
+} from "react-native-popup-dialog";
 import { Camera, Permissions, ImageManipulator } from "expo";
-import { Spinner } from "react-native-spinkit"
+import { NineCubesLoader } from "react-native-indicator";
 import { Ionicons } from "@expo/vector-icons";
 import { GCV_key, Yandex_key } from "../config/environment";
-import firebase from '../firebase'
+import firebase from "../firebase";
 
 export default class ImageDetection extends React.Component {
   state = {
     hasCameraPermission: null,
     type: Camera.Constants.Type.back,
-    identifier: '',
+    word: "",
+    identifier: "",
     visible: false,
     loading: false
   };
@@ -22,6 +27,11 @@ export default class ImageDetection extends React.Component {
   };
 
   takePicture = async () => {
+    if (!this.state.loading) {
+      this.setState({
+        loading: true
+      });
+    }
     const capture = await this.camera.takePictureAsync();
     const resized = await ImageManipulator.manipulateAsync(
       capture.uri,
@@ -50,34 +60,36 @@ export default class ImageDetection extends React.Component {
       }
     );
     const response = await results.json();
-    const objectIdentifier = response.responses[0].labelAnnotations[0].description;
+    const objectIdentifier =
+      response.responses[0].labelAnnotations[0].description;
+    this.setState({ word: objectIdentifier });
 
-    const baseUrl = "https://translate.yandex.net/api/v1.5/tr.json/translate?key="
-    const apiKey = Yandex_key
-    const text = `&text=${objectIdentifier}`
-    const lang = "&lang=es"
-    const fullUrl = baseUrl + apiKey + text + lang
+    const baseUrl =
+      "https://translate.yandex.net/api/v1.5/tr.json/translate?key=";
+    const apiKey = Yandex_key;
+    const text = `&text=${objectIdentifier}`;
+    const lang = "&lang=es";
+    const fullUrl = baseUrl + apiKey + text + lang;
 
     const transRequest = new Request(fullUrl, { method: "GET" });
     const transResponse = await fetch(transRequest);
-    const text2 = await transResponse.text();
-    const translation = JSON.parse(text2).text[0]
-    console.log(translation)
-    this.setState({identifier: translation, visible: true})
+    const translationText = await transResponse.text();
+    const translation = JSON.parse(translationText).text[0];
+    this.setState({ identifier: translation, visible: true, loading: false });
   };
 
-  addWordFromCam = async (word) => {
+  addWordFromCam = async word => {
     const { uid } = await firebase.auth().currentUser;
     await firebase
       .database()
       .ref(`${uid}/spanish/${word}`)
       .set({
         word: word,
-        translation: 'TEST',
+        translation: this.state.identifier,
         learned: false
       });
-      this.setState({visible: false})
-  }
+    this.setState({ visible: false });
+  };
 
   render() {
     const { hasCameraPermission } = this.state;
@@ -102,39 +114,38 @@ export default class ImageDetection extends React.Component {
                 flexDirection: "row"
               }}
             >
-              <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+              {!this.state.loading ? (
+                <View style={{ flex: 1, justifyContent: "flex-end" }}>
                   <TouchableOpacity
                     style={{
                       // flex: 0.1,
-                      alignItems: "center",
+                      alignItems: "center"
                     }}
                     onPress={this.takePicture}
                   >
-                    {/* <Text
-                      style={{ fontSize: 18, marginBottom: 20, color: "white" }}
-                    >
-                      {" "}
-                      Capture{" "}
-                    </Text> */}
                     <Ionicons
-                    name={"ios-camera"}
-                    size={50}
-                    style={{ color: "white" }}
-                  />
+                      name={"ios-camera"}
+                      size={50}
+                      style={{ color: "white" }}
+                    />
                   </TouchableOpacity>
-                    <Dialog
+                  <Dialog
                     width={0.7}
                     visible={this.state.visible}
                     footer={
                       <DialogFooter>
-                          <DialogButton 
-                            text="ADD TO WORDS"
-                            onPress={() => {this.addWordFromCam(this.state.identifier)}}
-                            textStyle={styles.textStyle}
-                          />
-                          <DialogButton 
+                        <DialogButton
+                          text="ADD TO WORDS"
+                          onPress={() => {
+                            this.addWordFromCam(this.state.word);
+                          }}
+                          textStyle={styles.textStyle}
+                        />
+                        <DialogButton
                           text="OK"
-                          onPress={() => {this.setState({visible: false})}}
+                          onPress={() => {
+                            this.setState({ visible: false });
+                          }}
                           textStyle={styles.textStyle}
                         />
                       </DialogFooter>
@@ -144,10 +155,24 @@ export default class ImageDetection extends React.Component {
                     }}
                   >
                     <DialogContent>
-                      <Text style={styles.dialogContentStyle}>{this.state.identifier}</Text>
+                      <Text style={styles.dialogContentStyle}>
+                        Word: {this.state.word}
+                      </Text>
+                      <Text style={styles.dialogContentStyle}>
+                        Translation: {this.state.identifier}
+                      </Text>
                     </DialogContent>
                   </Dialog>
-              </View>
+                </View>
+              ) : (
+                <View style={styles.loaderIcon}>
+                  <NineCubesLoader
+                    style={{ alignSelf: 'center' }}
+                    size={40}
+                    color={"#80B7F6"}
+                  />
+                </View>
+              )}
             </View>
           </Camera>
         </View>
@@ -164,7 +189,12 @@ const styles = StyleSheet.create({
   dialogContentStyle: {
     textAlign: "center",
     fontSize: 20,
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  loaderIcon: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   }
 });
