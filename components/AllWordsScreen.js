@@ -5,7 +5,12 @@ import { ButtonGroup } from "react-native-elements";
 import ListItem from "./react-native-elements/ListItem";
 import Swipeout from "react-native-swipeout";
 import firebase from "../firebase";
-import { updateWords } from "../store/words";
+import {
+  updateWords,
+  deleteWord,
+  markLearned,
+  markUnlearned
+} from "../store/words";
 
 const mapStateToProps = state => ({
   words: state.words.words
@@ -29,43 +34,13 @@ class AllWordsScreen extends Component {
 
   componentDidMount = async () => {
     const { uid } = await firebase.auth().currentUser;
-    this.unsubscribe = await firebase
-      .database()
-      .ref(`${uid}/spanish`)
-      .on("value", snapshot => {
-        const words = Object.values(snapshot.val() || {});
-        this.props.updateWords(words);
-      });
+    this.props.updateWords(uid);
   };
 
   componentWillUnmount = () => {
     if (this.unsubscribe) {
       this.unsubscribe();
     }
-  };
-
-  deleteWord = async word => {
-    const { uid } = await firebase.auth().currentUser;
-    await firebase
-      .database()
-      .ref(`${uid}/spanish/${word}`)
-      .remove();
-  };
-
-  markLearned = async word => {
-    const { uid } = await firebase.auth().currentUser;
-    await firebase
-      .database()
-      .ref(`${uid}/spanish/${word}`)
-      .update({ learned: true });
-  };
-
-  markUnlearned = async word => {
-    const { uid } = await firebase.auth().currentUser;
-    await firebase
-      .database()
-      .ref(`${uid}/spanish/${word}`)
-      .update({ learned: false });
   };
 
   updateIndex = selectedIndex => {
@@ -92,7 +67,7 @@ class AllWordsScreen extends Component {
           text: "Delete",
           backgroundColor: "red",
           onPress: () => {
-            this.deleteWord(word.word);
+            deleteWord(word.word);
           }
         }
       ];
@@ -102,14 +77,14 @@ class AllWordsScreen extends Component {
           text: "Delete",
           backgroundColor: "red",
           onPress: () => {
-            this.deleteWord(word.word);
+            deleteWord(word.word);
           }
         },
         {
           text: "Archive",
           backgroundColor: "green",
           onPress: () => {
-            this.markLearned(word.word);
+            markLearned(word.word);
           }
         }
       ];
@@ -119,14 +94,14 @@ class AllWordsScreen extends Component {
           text: "Delete",
           backgroundColor: "red",
           onPress: () => {
-            this.deleteWord(word.word);
+            deleteWord(word.word);
           }
         },
         {
           text: "Unarchive",
           backgroundColor: "green",
           onPress: () => {
-            this.markUnlearned(word.word);
+            markUnlearned(word.word);
           }
         }
       ];
@@ -184,4 +159,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AllWordsScreen);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AllWordsScreen);
