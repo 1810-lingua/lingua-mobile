@@ -5,6 +5,7 @@ import { createBottomTabNavigator, createAppContainer } from "react-navigation";
 import AllWordsScreen from '../components/AllWordsScreen';
 import FlashCardScreen from '../components/FlashCardScreen';
 import Profile from '../components/Profile';
+import ImageDetection from '../components/ImageDetection';
 
 export const TabNavigator = createBottomTabNavigator({
   Words: {
@@ -31,6 +32,19 @@ export const TabNavigator = createBottomTabNavigator({
               ? "ios-checkmark-circle-outline"
               : "ios-checkmark-circle-outline"
           }
+          size={26}
+          style={{ color: tintColor }}
+        />
+      )
+    }
+  },
+  ImageDetection: {
+    screen: ImageDetection,
+    navigationOptions: {
+      tabBarLabel: "Image Detection",
+      tabBarIcon: ({ tintColor, focused }) => (
+        <Ionicons
+          name={focused ? "ios-camera" : "ios-camera"}
           size={26}
           style={{ color: tintColor }}
         />
