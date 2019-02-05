@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import Dialog, { DialogContent, DialogFooter, DialogButton } from 'react-native-popup-dialog'
 import { Camera, Permissions, ImageManipulator } from "expo";
+import { Spinner } from "react-native-spinkit"
 import { Ionicons } from "@expo/vector-icons";
-import { GCV_key } from "../config/environment";
+import { GCV_key, Yandex_key } from "../config/environment";
 import firebase from '../firebase'
 
 export default class ImageDetection extends React.Component {
@@ -50,7 +51,19 @@ export default class ImageDetection extends React.Component {
     );
     const response = await results.json();
     const objectIdentifier = response.responses[0].labelAnnotations[0].description;
-    this.setState({identifier: objectIdentifier, visible: true})
+
+    const baseUrl = "https://translate.yandex.net/api/v1.5/tr.json/translate?key="
+    const apiKey = Yandex_key
+    const text = `&text=${objectIdentifier}`
+    const lang = "&lang=es"
+    const fullUrl = baseUrl + apiKey + text + lang
+
+    const transRequest = new Request(fullUrl, { method: "GET" });
+    const transResponse = await fetch(transRequest);
+    const text2 = await transResponse.text();
+    const translation = JSON.parse(text2).text[0]
+    console.log(translation)
+    this.setState({identifier: translation, visible: true})
   };
 
   addWordFromCam = async (word) => {

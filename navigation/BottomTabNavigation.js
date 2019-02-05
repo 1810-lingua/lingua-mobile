@@ -38,19 +38,6 @@ export const TabNavigator = createBottomTabNavigator({
       )
     }
   },
-  Profile: {
-    screen: Profile,
-    navigationOptions: {
-      tabBarLabel: "Profile",
-      tabBarIcon: ({ tintColor, focused }) => (
-        <Ionicons
-          name={focused ? "ios-person" : "ios-person"}
-          size={26}
-          style={{ color: tintColor }}
-        />
-      )
-    }
-  },
   ImageDetection: {
     screen: ImageDetection,
     navigationOptions: {
@@ -58,6 +45,19 @@ export const TabNavigator = createBottomTabNavigator({
       tabBarIcon: ({ tintColor, focused }) => (
         <Ionicons
           name={focused ? "ios-camera" : "ios-camera"}
+          size={26}
+          style={{ color: tintColor }}
+        />
+      )
+    }
+  },
+  Profile: {
+    screen: Profile,
+    navigationOptions: {
+      tabBarLabel: "Profile",
+      tabBarIcon: ({ tintColor, focused }) => (
+        <Ionicons
+          name={focused ? "ios-person" : "ios-person"}
           size={26}
           style={{ color: tintColor }}
         />
