@@ -7,71 +7,65 @@ import Swipeout from "react-native-swipeout";
 import firebase from "../firebase";
 import { updateWords } from "../store/words";
 
-const mapStateToProps = state => ({
-  words: state.words.words
-});
-
-const mapDispatchToProps = dispatch => ({
-  updateWords: words => dispatch(updateWords(words))
-});
 
 class AllWordsScreen extends Component {
   static navigationOptions = {
     title: "Words"
   };
-
-  constructor() {
-    super();
+  
+  constructor(props) {
+    super(props);
     this.state = {
-      selectedIndex: 0
+      selectedIndex: 0,
+      language: this.props.language || 'spanish'
     };
   }
-
+  
   componentDidMount = async () => {
     const { uid } = await firebase.auth().currentUser;
     this.unsubscribe = await firebase
-      .database()
-      .ref(`${uid}/spanish`)
-      .on("value", snapshot => {
-        const words = Object.values(snapshot.val() || {});
-        this.props.updateWords(words);
-      });
+    .database()
+    .ref(`${uid}/${this.state.language}`)
+    .on("value", snapshot => {
+      const words = Object.values(snapshot.val() || {});
+      this.props.updateWords(words);
+    });
   };
-
+  
   componentWillUnmount = () => {
     if (this.unsubscribe) {
       this.unsubscribe();
     }
   };
-
+  
   deleteWord = async word => {
     const { uid } = await firebase.auth().currentUser;
     await firebase
-      .database()
-      .ref(`${uid}/spanish/${word}`)
-      .remove();
+    .database()
+    .ref(`${uid}/spanish/${word}`)
+    .remove();
   };
-
+  
   markLearned = async word => {
     const { uid } = await firebase.auth().currentUser;
     await firebase
-      .database()
-      .ref(`${uid}/spanish/${word}`)
-      .update({ learned: true });
+    .database()
+    .ref(`${uid}/${this.state.language}/${word}`)
+    .update({ learned: true });
   };
-
+  
   markUnlearned = async word => {
     const { uid } = await firebase.auth().currentUser;
     await firebase
-      .database()
-      .ref(`${uid}/spanish/${word}`)
-      .update({ learned: false });
+    .database()
+    .ref(`${uid}/${this.state.language}/${word}`)
+    .update({ learned: false });
   };
-
+  
   updateIndex = selectedIndex => {
     this.setState({ selectedIndex });
   };
-
+  
   getFilteredWords = () => {
     const { words } = this.props;
     const { selectedIndex } = this.state;
@@ -83,7 +77,7 @@ class AllWordsScreen extends Component {
       return words.filter(word => word.learned === true);
     }
   };
-
+  
   getSwipeButtons = () => {
     const { selectedIndex } = this.state;
     if (selectedIndex === 0) {
@@ -132,12 +126,12 @@ class AllWordsScreen extends Component {
       ];
     }
   };
-
+  
   render() {
     const buttons = ["All", "To Learn", "Learned"];
     const swipeButtons = this.getSwipeButtons();
     const filteredWords = this.getFilteredWords();
-
+    
     return (
       <View style={{ flex: 1 }}>
         <ButtonGroup
@@ -184,4 +178,12 @@ const styles = StyleSheet.create({
   }
 });
 
+const mapStateToProps = state => ({
+  words: state.words.words,
+  language: state.language.language
+});
+
+const mapDispatchToProps = dispatch => ({
+  updateWords: words => dispatch(updateWords(words))
+});
 export default connect(mapStateToProps, mapDispatchToProps)(AllWordsScreen);
