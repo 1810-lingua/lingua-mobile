@@ -12,10 +12,12 @@ class AllWordsScreen extends Component {
     title: "Words"
   };
   
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+
     this.state = {
-      selectedIndex: 0
+      selectedIndex: 0,
+      language: this.props.language || 'spanish'
     };
   }
   
@@ -23,7 +25,7 @@ class AllWordsScreen extends Component {
     const { uid } = await firebase.auth().currentUser;
     this.unsubscribe = await firebase
     .database()
-    .ref(`${uid}/spanish`)
+    .ref(`${uid}/${this.state.language}`)
     .on("value", snapshot => {
       const words = Object.values(snapshot.val() || {});
       this.props.updateWords(words);
@@ -48,7 +50,7 @@ class AllWordsScreen extends Component {
     const { uid } = await firebase.auth().currentUser;
     await firebase
     .database()
-    .ref(`${uid}/spanish/${word}`)
+    .ref(`${uid}/${this.state.language}/${word}`)
     .update({ learned: true });
   };
   
@@ -56,7 +58,7 @@ class AllWordsScreen extends Component {
     const { uid } = await firebase.auth().currentUser;
     await firebase
     .database()
-    .ref(`${uid}/spanish/${word}`)
+    .ref(`${uid}/${this.state.language}/${word}`)
     .update({ learned: false });
   };
   
@@ -184,4 +186,12 @@ const styles = StyleSheet.create({
   }
 });
 
+const mapStateToProps = state => ({
+  words: state.words.words,
+  language: state.language.language
+});
+
+const mapDispatchToProps = dispatch => ({
+  updateWords: words => dispatch(updateWords(words))
+});
 export default connect(mapStateToProps, mapDispatchToProps)(AllWordsScreen);

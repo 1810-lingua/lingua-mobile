@@ -20,7 +20,8 @@ class flashCards extends Component {
     super(props);
     this.state = {
       unlearned: this.props.words.filter(word => !word.learned),
-      idx: 0
+      idx: 0,
+      language: this.props.language
     };
   }
   componentWillMount() {
@@ -74,7 +75,7 @@ class flashCards extends Component {
     const { uid } = await firebase.auth().currentUser;
     await firebase
       .database()
-      .ref(`${uid}/spanish/${word}`)
+      .ref(`${uid}/${this.state.language}/${word}`)
       .update({ learned: true });
     this.nextWord();
   }
@@ -162,7 +163,8 @@ class flashCards extends Component {
 }
 
 const mapStateToProps = state => ({
-  words: state.words.words
+  words: state.words.words,
+  language: state.language.language
 });
 
 const mapDispatchToProps = dispatch => ({

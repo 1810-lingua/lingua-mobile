@@ -9,11 +9,13 @@ const gotWords = (words) => ({
   words
 });
 
+
 export const updateWords = (words) => {
   return async (dispatch) => {
     dispatch(gotWords(words));
   }
 }
+
 
 export const wordReducer = (state = initialState, action) => {
   switch (action.type) {
