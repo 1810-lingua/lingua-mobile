@@ -7,7 +7,6 @@ import Swipeout from "react-native-swipeout";
 import firebase from "../firebase";
 import { updateWords } from "../store/words";
 
-
 class AllWordsScreen extends Component {
   static navigationOptions = {
     title: "Words"
@@ -15,6 +14,7 @@ class AllWordsScreen extends Component {
   
   constructor(props) {
     super(props);
+
     this.state = {
       selectedIndex: 0,
       language: this.props.language || 'spanish'
@@ -143,7 +143,7 @@ class AllWordsScreen extends Component {
           selectedTextStyle={styles.buttonGroupSelectedText}
           selectedButtonStyle={styles.buttonGroupSelectedButton}
           innerBorderStyle={{ color: "#7995b5", width: 0.5 }}
-        />
+          />
         <ScrollView>
           {filteredWords.map((word, idx) => (
             <Swipeout key={idx} left={swipeButtons(word)} autoClose={true}>
@@ -151,7 +151,7 @@ class AllWordsScreen extends Component {
                 key={idx}
                 title={word.word}
                 subtitle={word.translation}
-              />
+                />
             </Swipeout>
           ))}
         </ScrollView>
@@ -160,8 +160,16 @@ class AllWordsScreen extends Component {
   }
 }
 
+const mapStateToProps = state => ({
+  words: state.words.words
+});
+
+const mapDispatchToProps = dispatch => ({
+  updateWords: words => dispatch(updateWords(words))
+});
+
 const styles = StyleSheet.create({
-  sflex: {
+  flex: {
     flex: 1
   },
   buttonGroupContainer: {

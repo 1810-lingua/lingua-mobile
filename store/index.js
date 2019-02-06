@@ -6,7 +6,7 @@ import { wordReducer } from './words';
 import { languageReducer } from './language'
 
 const reducer = combineReducers({ words: wordReducer, language: languageReducer });
-const middleware = applyMiddleware(thunkMiddleware, createLogger({ collapsed: true }));
+const middleware = applyMiddleware(thunkMiddleware);
 const store = createStore(reducer, middleware);
 
 export default store;
