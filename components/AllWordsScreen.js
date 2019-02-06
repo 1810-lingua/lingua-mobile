@@ -30,6 +30,9 @@ class AllWordsScreen extends Component {
       const words = Object.values(snapshot.val() || {});
       this.props.updateWords(words);
     });
+    console.log('all: '+ this.props.language)
+    console.log('allgkg: '+ this.props.words)
+
   };
   
   componentWillUnmount = () => {
@@ -160,14 +163,6 @@ class AllWordsScreen extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  words: state.words.words
-});
-
-const mapDispatchToProps = dispatch => ({
-  updateWords: words => dispatch(updateWords(words))
-});
-
 const styles = StyleSheet.create({
   flex: {
     flex: 1
@@ -188,7 +183,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   words: state.words.words,
-  language: state.language.language
+  language: state.words.language
 });
 
 const mapDispatchToProps = dispatch => ({

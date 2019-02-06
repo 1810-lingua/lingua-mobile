@@ -15,14 +15,24 @@ import { updateWords } from "../store/words";
 import { connect } from "react-redux";
 import firebase from "firebase";
 
+
 class flashCards extends Component {
   constructor(props) {
     super(props);
     this.state = {
       unlearned: this.props.words.filter(word => !word.learned),
       idx: 0,
-      language: this.props.language
+      language: this.props.language || 'spanish'
     };
+  }
+
+  componentDidMount(){
+    console.log('language: ' + this.props.language)
+    this.setState({
+      unlearned: this.props.words.filter(word => !word.learned),
+      idx: 0,
+      language: this.props.language || 'spanish'
+    })
   }
   componentWillMount() {
     this.animatedValue = new Animated.Value(0);
@@ -66,16 +76,22 @@ class flashCards extends Component {
 
   nextWord() {
     if (this.state.idx < this.state.unlearned.length) {
-      this.setState({ idx: this.state.idx + 1 });
+      console.log("nsaldf: " +this.props.words)
+      this.setState({
+        unlearned: this.props.words.filter(word => !word.learned),
+        idx: this.state.idx + 1,
+        language: this.props.language
+      })
     }
     this.flipCard();
   }
 
   async knewThisWord(word) {
+    console.log(this.state.language)
     const { uid } = await firebase.auth().currentUser;
     await firebase
       .database()
-      .ref(`${uid}/${this.state.language}/${word}`)
+      .ref(`${uid}/${this.props.language}/${word}`)
       .update({ learned: true });
     this.nextWord();
   }
@@ -164,7 +180,7 @@ class flashCards extends Component {
 
 const mapStateToProps = state => ({
   words: state.words.words,
-  language: state.language.language
+  language: state.words.language
 });
 
 const mapDispatchToProps = dispatch => ({
