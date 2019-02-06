@@ -103,7 +103,7 @@ class flashCards extends Component {
               ]}
             >
               <Text style={styles.flipText}>
-                {this.props.words[this.state.idx].word}
+                {this.state.unlearned[this.state.idx].word}
               </Text>
             </Animated.View>
             <Animated.View
@@ -120,25 +120,28 @@ class flashCards extends Component {
                   height: 250
                 }}
               >
-                {this.props.words[this.state.idx].translation}
+                {this.state.unlearned[this.state.idx].translation}
                 {"  "}
                 <Ionicons
                   name="ios-megaphone"
                   size={30}
                   style={{ color: "steelblue" }}
                   onPress={() =>
-                    Speech.speak(this.props.words[this.state.idx].translation, {
-                      language: "es",
-                      pitch: 1.0,
-                      rate: 1.0
-                    })
+                    Speech.speak(
+                      this.state.unlearned[this.state.idx].translation,
+                      {
+                        language: "es",
+                        pitch: 1.0,
+                        rate: 1.0
+                      }
+                    )
                   }
                 />
               </Text>
 
               <Button
                 onPress={() =>
-                  this.knewThisWord(this.props.words[this.state.idx].word)
+                  this.knewThisWord(this.state.unlearned[this.state.idx].word)
                 }
                 style={styles.button}
                 title="I know this word"
