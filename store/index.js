@@ -3,7 +3,6 @@ import { createLogger } from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
 
 import { wordReducer } from './words';
-import { languageReducer } from './language'
 
 const reducer = combineReducers({ words: wordReducer });
 const middleware = applyMiddleware(thunkMiddleware);

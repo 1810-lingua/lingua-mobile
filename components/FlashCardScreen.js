@@ -10,8 +10,7 @@ import {
 } from "react-native";
 import { Speech } from "expo";
 import { Ionicons } from "@expo/vector-icons";
-
-import { updateWords } from "../store/words";
+import { updateWords, filteredWords } from "../store/words";
 import { connect } from "react-redux";
 import firebase from "firebase";
 
@@ -20,20 +19,16 @@ class flashCards extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      unlearned: this.props.words.filter(word => !word.learned),
-      idx: 0,
-      language: this.props.language || 'spanish'
+      idx: 0
     };
   }
 
   componentDidMount(){
-    console.log('language: ' + this.props.language)
     this.setState({
-      unlearned: this.props.words.filter(word => !word.learned),
-      idx: 0,
-      language: this.props.language || 'spanish'
+      idx: 0
     })
   }
+
   componentWillMount() {
     this.animatedValue = new Animated.Value(0);
     this.value = 0;
@@ -75,19 +70,15 @@ class flashCards extends Component {
   }
 
   nextWord() {
-    if (this.state.idx < this.state.unlearned.length) {
-      console.log("nsaldf: " +this.props.words)
+    if (this.state.idx < this.props.unlearned.length) {
       this.setState({
-        unlearned: this.props.words.filter(word => !word.learned),
         idx: this.state.idx + 1,
-        language: this.props.language
       })
     }
     this.flipCard();
   }
 
   async knewThisWord(word) {
-    console.log(this.state.language)
     const { uid } = await firebase.auth().currentUser;
     await firebase
       .database()
@@ -108,6 +99,15 @@ class flashCards extends Component {
       transform: [{ rotateY: this.backInterpolate }]
     };
 
+    const languages = {
+      spanish: "es",
+      french: "fr",
+      german: "de",
+      italian: "it",
+      portuguese: "pt",
+      polish: "pl"
+    };
+
     return (
       <View style={styles.container}>
         <TouchableOpacity onPress={() => this.flipCard()}>
@@ -120,7 +120,7 @@ class flashCards extends Component {
               ]}
             >
               <Text style={styles.flipText}>
-                {this.state.unlearned[this.state.idx].word}
+                {this.props.unlearned[this.state.idx].word}
               </Text>
             </Animated.View>
             <Animated.View
@@ -137,7 +137,7 @@ class flashCards extends Component {
                   height: 250
                 }}
               >
-                {this.state.unlearned[this.state.idx].translation}
+                {this.props.unlearned[this.state.idx].translation}
                 {"  "}
                 <Ionicons
                   name="ios-megaphone"
@@ -145,9 +145,9 @@ class flashCards extends Component {
                   style={{ color: "steelblue" }}
                   onPress={() =>
                     Speech.speak(
-                      this.state.unlearned[this.state.idx].translation,
+                      this.props.unlearned[this.state.idx].translation,
                       {
-                        language: "es",
+                        language: `${languages[this.props.language]}`,
                         pitch: 1.0,
                         rate: 1.0
                       }
@@ -158,7 +158,7 @@ class flashCards extends Component {
 
               <Button
                 onPress={() =>
-                  this.knewThisWord(this.state.unlearned[this.state.idx].word)
+                  this.knewThisWord(this.props.unlearned[this.state.idx].word)
                 }
                 style={styles.button}
                 title="I know this word"
@@ -180,11 +180,13 @@ class flashCards extends Component {
 
 const mapStateToProps = state => ({
   words: state.words.words,
-  language: state.words.language
+  language: state.words.language,
+  unlearned: state.words.unlearned
 });
 
 const mapDispatchToProps = dispatch => ({
-  updateWords: words => dispatch(updateWords(words))
+  updateWords: words => dispatch(updateWords(words)),
+  filteredWords: words => dispatch(filteredWords(words))
 });
 
 const styles = StyleSheet.create({
