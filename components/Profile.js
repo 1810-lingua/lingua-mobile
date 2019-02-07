@@ -3,31 +3,25 @@ import { connect } from "react-redux";
 import { StyleSheet, View, Button } from "react-native";
 import { Dropdown } from 'react-native-material-dropdown';
 import firebase from "../firebase";
-import {updateLanguage} from '../store/language'
+import {gotLanguage, gotWords, filteredWords} from '../store/words'
 import {updateWords} from '../store/words'
 
 
 class Profile extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      language: this.props.language,
-      words: this.props.words
-    };
-  }
-
+ 
   changeHandler = async (value) => {
-    console.log(value.toLowerCase())
     const { uid } = await firebase.auth().currentUser;
-    this.unsubscribe = await firebase
+    await firebase
       .database()
       .ref(`${uid}/${value.toLowerCase()}`)
       .on("value", snapshot => {
         const words = Object.values(snapshot.val() || {});
-        this.props.updateWords(words);
+        this.props.gotWords(words);
+        this.props.filteredWords(words);
+        this.props.gotLanguage(value.toLowerCase());
       });
-    
   }
+
   render() {
     let data = [{
       value: 'Spanish',
@@ -49,7 +43,9 @@ class Profile extends Component {
         label='Select Language'
         data={data}
         dropdownOffset= {{top: 40, left: 0}}
-        onChangeText = {value => this.changeHandler(value)}
+        onChangeText = {async value => {
+            await this.changeHandler(value)
+          }}
       />
         <Button
           onPress={() => firebase.auth().signOut()}
@@ -68,13 +64,16 @@ const styles = StyleSheet.create({
   }
 });
 const mapStateToProps = state => ({
-  language: state.language.language,
-  words: state.words.words
+  language: state.words.language,
+  words: state.words.words,
+  learned: state.words.learned,
+  unlearned: state.words.unlearned
 });
 
 const mapDispatchToProps = dispatch => ({
-  updateLanguage: lang => dispatch(updateLanguage(lang)),
-  updateWords: words => dispatch(updateWords(words))
+  gotLanguage: lang => dispatch(gotLanguage(lang)),
+  gotWords: words => dispatch(gotWords(words)),
+  filteredWords: words => dispatch(filteredWords(words))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

@@ -5,7 +5,7 @@ import { ButtonGroup } from "react-native-elements";
 import ListItem from "./react-native-elements/ListItem";
 import Swipeout from "react-native-swipeout";
 import firebase from "../firebase";
-import { updateWords } from "../store/words";
+import { updateWords, filteredWords } from "../store/words";
 
 class AllWordsScreen extends Component {
   static navigationOptions = {
@@ -17,19 +17,21 @@ class AllWordsScreen extends Component {
 
     this.state = {
       selectedIndex: 0,
-      language: this.props.language || 'spanish'
     };
   }
   
   componentDidMount = async () => {
-    const { uid } = await firebase.auth().currentUser;
-    this.unsubscribe = await firebase
-    .database()
-    .ref(`${uid}/${this.state.language}`)
-    .on("value", snapshot => {
-      const words = Object.values(snapshot.val() || {});
-      this.props.updateWords(words);
-    });
+    if (this.props.words.length === 0) {
+      const { uid } = await firebase.auth().currentUser;
+      this.unsubscribe = await firebase
+      .database()
+      .ref(`${uid}/${this.props.language}`)
+      .on("value", snapshot => {
+        const words = Object.values(snapshot.val() || {});
+        this.props.updateWords(words);
+        this.props.filteredWords(words);
+      });
+    } 
   };
   
   componentWillUnmount = () => {
@@ -42,7 +44,7 @@ class AllWordsScreen extends Component {
     const { uid } = await firebase.auth().currentUser;
     await firebase
     .database()
-    .ref(`${uid}/spanish/${word}`)
+    .ref(`${uid}/${this.props.language}/${word}`)
     .remove();
   };
   
@@ -50,7 +52,7 @@ class AllWordsScreen extends Component {
     const { uid } = await firebase.auth().currentUser;
     await firebase
     .database()
-    .ref(`${uid}/${this.state.language}/${word}`)
+    .ref(`${uid}/${this.props.language}/${word}`)
     .update({ learned: true });
   };
   
@@ -58,7 +60,7 @@ class AllWordsScreen extends Component {
     const { uid } = await firebase.auth().currentUser;
     await firebase
     .database()
-    .ref(`${uid}/${this.state.language}/${word}`)
+    .ref(`${uid}/${this.props.language}/${word}`)
     .update({ learned: false });
   };
   
@@ -67,14 +69,14 @@ class AllWordsScreen extends Component {
   };
   
   getFilteredWords = () => {
-    const { words } = this.props;
+    const { words, learned, unlearned } = this.props;
     const { selectedIndex } = this.state;
     if (selectedIndex === 0) {
       return words;
     } else if (selectedIndex === 1) {
-      return words.filter(word => word.learned === false);
+      return unlearned;
     } else {
-      return words.filter(word => word.learned === true);
+      return learned;
     }
   };
   
@@ -160,14 +162,6 @@ class AllWordsScreen extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  words: state.words.words
-});
-
-const mapDispatchToProps = dispatch => ({
-  updateWords: words => dispatch(updateWords(words))
-});
-
 const styles = StyleSheet.create({
   flex: {
     flex: 1
@@ -188,10 +182,13 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   words: state.words.words,
-  language: state.language.language
+  language: state.words.language,
+  learned: state.words.learned,
+  unlearned: state.words.unlearned
 });
 
 const mapDispatchToProps = dispatch => ({
-  updateWords: words => dispatch(updateWords(words))
+  updateWords: words => dispatch(updateWords(words)),
+  filteredWords: words => dispatch(filteredWords(words))
 });
 export default connect(mapStateToProps, mapDispatchToProps)(AllWordsScreen);
