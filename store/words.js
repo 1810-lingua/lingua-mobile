@@ -33,14 +33,8 @@ export const filteredWords = (words) => ({
   unlearned: words.filter(word => !word.learned)
 })
 
-// export const unlearnedWords = (words) => ({
-//   type: GOT_UNLEARNED,
-//   unlearned: words.filter(word => !word.learned)
-// })
-
 export const updateLanguage = (language) => {
   return async (dispatch) => {
-    console.log('here')
     dispatch(gotLanguage(language));
   }
 }

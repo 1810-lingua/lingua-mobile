@@ -74,7 +74,7 @@ class flashCards extends Component {
       this.setState({
         idx: this.state.idx + 1,
       })
-    }
+    } 
     this.flipCard();
   }
 

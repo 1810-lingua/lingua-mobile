@@ -17,7 +17,6 @@ class AllWordsScreen extends Component {
 
     this.state = {
       selectedIndex: 0,
-      // language: this.props.language || 'spanish'
     };
   }
   
